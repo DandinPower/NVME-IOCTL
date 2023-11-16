@@ -1,0 +1,404 @@
+[Round: 0]
+Validation successful: Data matches!
+Write speed: 1712 MB/s
+Read speed: 2263 MB/s
+[Round: 1]
+Validation successful: Data matches!
+Write speed: 2460 MB/s
+Read speed: 2842 MB/s
+[Round: 2]
+Validation successful: Data matches!
+Write speed: 1696 MB/s
+Read speed: 3024 MB/s
+[Round: 3]
+Validation successful: Data matches!
+Write speed: 1711 MB/s
+Read speed: 3120 MB/s
+[Round: 4]
+Validation successful: Data matches!
+Write speed: 1740 MB/s
+Read speed: 3005 MB/s
+[Round: 5]
+Validation successful: Data matches!
+Write speed: 1721 MB/s
+Read speed: 2978 MB/s
+[Round: 6]
+Validation successful: Data matches!
+Write speed: 1714 MB/s
+Read speed: 3017 MB/s
+[Round: 7]
+Validation successful: Data matches!
+Write speed: 1689 MB/s
+Read speed: 3034 MB/s
+[Round: 8]
+Validation successful: Data matches!
+Write speed: 1705 MB/s
+Read speed: 3059 MB/s
+[Round: 9]
+Validation successful: Data matches!
+Write speed: 1751 MB/s
+Read speed: 2917 MB/s
+[Round: 10]
+Validation successful: Data matches!
+Write speed: 1753 MB/s
+Read speed: 2989 MB/s
+[Round: 11]
+Validation successful: Data matches!
+Write speed: 1708 MB/s
+Read speed: 3036 MB/s
+[Round: 12]
+Validation successful: Data matches!
+Write speed: 1696 MB/s
+Read speed: 3010 MB/s
+[Round: 13]
+Validation successful: Data matches!
+Write speed: 1712 MB/s
+Read speed: 2924 MB/s
+[Round: 14]
+Validation successful: Data matches!
+Write speed: 1669 MB/s
+Read speed: 3090 MB/s
+[Round: 15]
+Validation successful: Data matches!
+Write speed: 720 MB/s
+Read speed: 2939 MB/s
+[Round: 16]
+Validation successful: Data matches!
+Write speed: 1696 MB/s
+Read speed: 3046 MB/s
+[Round: 17]
+Validation successful: Data matches!
+Write speed: 1597 MB/s
+Read speed: 2462 MB/s
+[Round: 18]
+Validation successful: Data matches!
+Write speed: 1738 MB/s
+Read speed: 2995 MB/s
+[Round: 19]
+Validation successful: Data matches!
+Write speed: 1703 MB/s
+Read speed: 2926 MB/s
+[Round: 20]
+Validation successful: Data matches!
+Write speed: 1736 MB/s
+Read speed: 3021 MB/s
+[Round: 21]
+Validation successful: Data matches!
+Write speed: 1684 MB/s
+Read speed: 3157 MB/s
+[Round: 22]
+Validation successful: Data matches!
+Write speed: 1749 MB/s
+Read speed: 2958 MB/s
+[Round: 23]
+Validation successful: Data matches!
+Write speed: 1704 MB/s
+Read speed: 3087 MB/s
+[Round: 24]
+Validation successful: Data matches!
+Write speed: 1747 MB/s
+Read speed: 3051 MB/s
+[Round: 25]
+Validation successful: Data matches!
+Write speed: 1693 MB/s
+Read speed: 2950 MB/s
+[Round: 26]
+Validation successful: Data matches!
+Write speed: 1691 MB/s
+Read speed: 3118 MB/s
+[Round: 27]
+Validation successful: Data matches!
+Write speed: 1583 MB/s
+Read speed: 3029 MB/s
+[Round: 28]
+Validation successful: Data matches!
+Write speed: 1719 MB/s
+Read speed: 3049 MB/s
+[Round: 29]
+Validation successful: Data matches!
+Write speed: 1715 MB/s
+Read speed: 3015 MB/s
+[Round: 30]
+Validation successful: Data matches!
+Write speed: 1713 MB/s
+Read speed: 3050 MB/s
+[Round: 31]
+Validation successful: Data matches!
+Write speed: 1675 MB/s
+Read speed: 3047 MB/s
+[Round: 32]
+Validation successful: Data matches!
+Write speed: 1663 MB/s
+Read speed: 3041 MB/s
+[Round: 33]
+Validation successful: Data matches!
+Write speed: 1737 MB/s
+Read speed: 2955 MB/s
+[Round: 34]
+Validation successful: Data matches!
+Write speed: 1706 MB/s
+Read speed: 3002 MB/s
+[Round: 35]
+Validation successful: Data matches!
+Write speed: 1617 MB/s
+Read speed: 3047 MB/s
+[Round: 36]
+Validation successful: Data matches!
+Write speed: 1527 MB/s
+Read speed: 2978 MB/s
+[Round: 37]
+Validation successful: Data matches!
+Write speed: 1672 MB/s
+Read speed: 2987 MB/s
+[Round: 38]
+Validation successful: Data matches!
+Write speed: 1712 MB/s
+Read speed: 2980 MB/s
+[Round: 39]
+Validation successful: Data matches!
+Write speed: 1705 MB/s
+Read speed: 3069 MB/s
+[Round: 40]
+Validation successful: Data matches!
+Write speed: 1702 MB/s
+Read speed: 3018 MB/s
+[Round: 41]
+Validation successful: Data matches!
+Write speed: 1730 MB/s
+Read speed: 3037 MB/s
+[Round: 42]
+Validation successful: Data matches!
+Write speed: 1702 MB/s
+Read speed: 3116 MB/s
+[Round: 43]
+Validation successful: Data matches!
+Write speed: 1686 MB/s
+Read speed: 3070 MB/s
+[Round: 44]
+Validation successful: Data matches!
+Write speed: 1725 MB/s
+Read speed: 3039 MB/s
+[Round: 45]
+Validation successful: Data matches!
+Write speed: 717 MB/s
+Read speed: 2974 MB/s
+[Round: 46]
+Validation successful: Data matches!
+Write speed: 1634 MB/s
+Read speed: 2999 MB/s
+[Round: 47]
+Validation successful: Data matches!
+Write speed: 1732 MB/s
+Read speed: 3025 MB/s
+[Round: 48]
+Validation successful: Data matches!
+Write speed: 2372 MB/s
+Read speed: 2963 MB/s
+[Round: 49]
+Validation successful: Data matches!
+Write speed: 1682 MB/s
+Read speed: 3112 MB/s
+[Round: 50]
+Validation successful: Data matches!
+Write speed: 1681 MB/s
+Read speed: 3088 MB/s
+[Round: 51]
+Validation successful: Data matches!
+Write speed: 1682 MB/s
+Read speed: 3058 MB/s
+[Round: 52]
+Validation successful: Data matches!
+Write speed: 1702 MB/s
+Read speed: 2932 MB/s
+[Round: 53]
+Validation successful: Data matches!
+Write speed: 1712 MB/s
+Read speed: 2985 MB/s
+[Round: 54]
+Validation successful: Data matches!
+Write speed: 1702 MB/s
+Read speed: 2973 MB/s
+[Round: 55]
+Validation successful: Data matches!
+Write speed: 1710 MB/s
+Read speed: 3035 MB/s
+[Round: 56]
+Validation successful: Data matches!
+Write speed: 1726 MB/s
+Read speed: 3081 MB/s
+[Round: 57]
+Validation successful: Data matches!
+Write speed: 1642 MB/s
+Read speed: 2423 MB/s
+[Round: 58]
+Validation successful: Data matches!
+Write speed: 1702 MB/s
+Read speed: 2927 MB/s
+[Round: 59]
+Validation successful: Data matches!
+Write speed: 1742 MB/s
+Read speed: 3036 MB/s
+[Round: 60]
+Validation successful: Data matches!
+Write speed: 1681 MB/s
+Read speed: 3021 MB/s
+[Round: 61]
+Validation successful: Data matches!
+Write speed: 1682 MB/s
+Read speed: 3063 MB/s
+[Round: 62]
+Validation successful: Data matches!
+Write speed: 1703 MB/s
+Read speed: 3056 MB/s
+[Round: 63]
+Validation successful: Data matches!
+Write speed: 1697 MB/s
+Read speed: 3015 MB/s
+[Round: 64]
+Validation successful: Data matches!
+Write speed: 1704 MB/s
+Read speed: 3051 MB/s
+[Round: 65]
+Validation successful: Data matches!
+Write speed: 1690 MB/s
+Read speed: 3009 MB/s
+[Round: 66]
+Validation successful: Data matches!
+Write speed: 1732 MB/s
+Read speed: 3018 MB/s
+[Round: 67]
+Validation successful: Data matches!
+Write speed: 1699 MB/s
+Read speed: 3109 MB/s
+[Round: 68]
+Validation successful: Data matches!
+Write speed: 1728 MB/s
+Read speed: 2995 MB/s
+[Round: 69]
+Validation successful: Data matches!
+Write speed: 1695 MB/s
+Read speed: 3045 MB/s
+[Round: 70]
+Validation successful: Data matches!
+Write speed: 1718 MB/s
+Read speed: 3048 MB/s
+[Round: 71]
+Validation successful: Data matches!
+Write speed: 1719 MB/s
+Read speed: 2845 MB/s
+[Round: 72]
+Validation successful: Data matches!
+Write speed: 1701 MB/s
+Read speed: 3088 MB/s
+[Round: 73]
+Validation successful: Data matches!
+Write speed: 1732 MB/s
+Read speed: 3020 MB/s
+[Round: 74]
+Validation successful: Data matches!
+Write speed: 1698 MB/s
+Read speed: 2984 MB/s
+[Round: 75]
+Validation successful: Data matches!
+Write speed: 1706 MB/s
+Read speed: 2959 MB/s
+[Round: 76]
+Validation successful: Data matches!
+Write speed: 718 MB/s
+Read speed: 3068 MB/s
+[Round: 77]
+Validation successful: Data matches!
+Write speed: 1686 MB/s
+Read speed: 3000 MB/s
+[Round: 78]
+Validation successful: Data matches!
+Write speed: 1689 MB/s
+Read speed: 3066 MB/s
+[Round: 79]
+Validation successful: Data matches!
+Write speed: 1707 MB/s
+Read speed: 3037 MB/s
+[Round: 80]
+Validation successful: Data matches!
+Write speed: 1695 MB/s
+Read speed: 3003 MB/s
+[Round: 81]
+Validation successful: Data matches!
+Write speed: 1702 MB/s
+Read speed: 3005 MB/s
+[Round: 82]
+Validation successful: Data matches!
+Write speed: 1672 MB/s
+Read speed: 2985 MB/s
+[Round: 83]
+Validation successful: Data matches!
+Write speed: 1715 MB/s
+Read speed: 2944 MB/s
+[Round: 84]
+Validation successful: Data matches!
+Write speed: 1729 MB/s
+Read speed: 3038 MB/s
+[Round: 85]
+Validation successful: Data matches!
+Write speed: 1686 MB/s
+Read speed: 3029 MB/s
+[Round: 86]
+Validation successful: Data matches!
+Write speed: 1755 MB/s
+Read speed: 3061 MB/s
+[Round: 87]
+Validation successful: Data matches!
+Write speed: 1709 MB/s
+Read speed: 3024 MB/s
+[Round: 88]
+Validation successful: Data matches!
+Write speed: 1619 MB/s
+Read speed: 3059 MB/s
+[Round: 89]
+Validation successful: Data matches!
+Write speed: 1722 MB/s
+Read speed: 3028 MB/s
+[Round: 90]
+Validation successful: Data matches!
+Write speed: 1728 MB/s
+Read speed: 2975 MB/s
+[Round: 91]
+Validation successful: Data matches!
+Write speed: 1694 MB/s
+Read speed: 3008 MB/s
+[Round: 92]
+Validation successful: Data matches!
+Write speed: 1704 MB/s
+Read speed: 2967 MB/s
+[Round: 93]
+Validation successful: Data matches!
+Write speed: 1673 MB/s
+Read speed: 3031 MB/s
+[Round: 94]
+Validation successful: Data matches!
+Write speed: 1708 MB/s
+Read speed: 2941 MB/s
+[Round: 95]
+Validation successful: Data matches!
+Write speed: 1684 MB/s
+Read speed: 3025 MB/s
+[Round: 96]
+Validation successful: Data matches!
+Write speed: 1696 MB/s
+Read speed: 3051 MB/s
+[Round: 97]
+Validation successful: Data matches!
+Write speed: 1684 MB/s
+Read speed: 2378 MB/s
+[Round: 98]
+Validation successful: Data matches!
+Write speed: 1710 MB/s
+Read speed: 3000 MB/s
+[Round: 99]
+Validation successful: Data matches!
+Write speed: 1703 MB/s
+Read speed: 2956 MB/s
+
+[IO Test] Device:/dev/nvme1n1p2 Buffer Size: 16777216 Test Rounds: 100
+Avg Write speed: 1641 MB/s
+Avg Read speed: 2984 MB/s
