@@ -44,9 +44,11 @@ int main()
     srand(time(NULL));
     layerVecMap &layerVecMapMgr = layerVecMap::getInstance();
     
-    int result = 0;
+    u_int16_t result = 0;
     char *wptr = new char[262144000];
     char *rptr = new char[262144000]{0};
+    u_int16_t test_loop = 291;
+    double r_speed = 0, w_speed = 0; 
     ushort *wData = reinterpret_cast<ushort *>(wptr);
     ushort *rData = reinterpret_cast<ushort *>(rptr);
     for (int k = 0; k < (262144000 >> 1); k++)
@@ -56,7 +58,7 @@ int main()
         wData[k] = float_to_half(r);
     }
 
-    for (int i = 0; i < 1; i++)
+    for (u_int16_t i = 0; i < test_loop; i++)
     {
         
         memset(rptr, 0x0, 262144000);
@@ -85,12 +87,15 @@ int main()
         string str = "/media/nvme1/md4/zero_stage_3/bfloat16params/rank0/" + to_string(i) + "_" + to_string(16777216) + "_param_bfloat16.tensor.swp";
         const char *fileName = str.c_str();
         auto start = chrono::steady_clock::now();
+        cout << fileName << endl;
         layerVecMapMgr.parsefromFileName(fileName, 1, wptr, 0);
         auto mid = chrono::steady_clock::now();
         layerVecMapMgr.parsefromFileName(fileName, 0, rptr, 0);
         auto end = chrono::steady_clock::now();
         cout << chrono::duration <double, milli> (mid - start).count() << " ms" << endl;
         cout << chrono::duration <double, milli> (end - mid).count() << " ms" << endl;
+        w_speed += chrono::duration <double, milli> (mid - start).count();
+        r_speed += chrono::duration <double, milli> (end - mid).count();
         // for (int k = 0; k < 16777216; k++)
         // {
         //     if (rData[k] != wData[k])
@@ -100,6 +105,10 @@ int main()
         //     }
         // }
     }
+    w_speed /= test_loop;
+    r_speed /= test_loop;
+    cout << "Avg. write " << w_speed << "ms" << endl;
+    cout << "Avg. read " << r_speed << "ms" << endl;
 
     delete[] rptr;
     delete[] wptr;

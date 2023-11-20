@@ -47,7 +47,7 @@ public:
     std::map<std::string, struct layerInfoMgr> layerMgr;
     struct prevOperation prevOperationMgr;
     unsigned long long allocLBAoffset;
-    int parsefromFileName(const char *fileName, unsigned short op, void *data, unsigned long long size = 0);
+    unsigned long long parsefromFileName(const char *fileName, unsigned short op, void *data, unsigned long long size = 0);
     unsigned long long getLBAfromList(std::vector<std::string> tempfileNameSplit, layerInfoMgr tempLayerInfoMgr, unsigned long long *tempSize);
     struct LBAMgr getTempLBAMgr(std::vector<std::string> tempfileNameSplit, std::vector<std::string> prevFilePathSplit);
     static layerVecMap& getInstance();

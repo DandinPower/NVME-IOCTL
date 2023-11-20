@@ -28,7 +28,7 @@
 #include <functional>
 #include <chrono>
 #define asyncFeat 0
-#define chunkSize 0xFF8
+#define chunkSize 4088
 #define posixMemalignFeat 1
 #if (asyncFeat == 1 && posixMemalignFeat == 1)
 #error "NOT HAVE THIS SETTING IN CURRENT CODE"
@@ -119,22 +119,6 @@ int nvme_flush(int fd, __u32 nsid)
     return nvme_submit_io_passthru(fd, &cmd);
 }
 
-// int nvme_write_zeros(int fd, __u32 nsid, __u64 slba, __u16 nlb,
-// 		     __u16 control, __u32 reftag, __u16 apptag, __u16 appmask)
-// {
-// 	struct nvme_passthru_cmd cmd = {
-// 		.opcode		= nvme_cmd_write_zeroes,
-// 		.nsid		= nsid,
-// 		.cdw10		= slba & 0xffffffff,
-// 		.cdw11		= slba >> 32,
-// 		.cdw12		= nlb | (control << 16),
-// 		.cdw14		= reftag,
-// 		.cdw15		= apptag | (appmask << 16),
-// 	};
-
-// 	return nvme_submit_io_passthru(fd, &cmd);
-// }
-
 int nvme_operation_handler(__u64 slba, __u64 size, unsigned short op, void *data)
 {
 
@@ -146,33 +130,13 @@ int nvme_operation_handler(__u64 slba, __u64 size, unsigned short op, void *data
     unsigned char *newData = reinterpret_cast<unsigned char *>(data);
     int phys_sector_size = 0;
     __u64 backupSize = size;
-#if asyncFeat
-    std::vector<std::future<int>> asyncFutures;
-#if (posixMemalignFeat == 0)
-    std::vector<void*> data_pointers;
-    int num_buffers = (size >> 9) / chunkSize + 1;
-    int pointer_idx = 0;
-    for (int i = 0; i < num_buffers; ++i) {
-        void* data_ptr;
-        if (posix_memalign(&data_ptr, 512, (chunkSize + 1) << 9) != 0) {
-            std::cerr << "Memory allocation failed." << std::endl;
-            return 1;
-        }
-        // save data ptr
-        data_pointers.push_back(data_ptr);
-    }
-#endif
-#endif
+
     if (fd < 0)
     {
         returnVal = -1;
         perror("open fd failed");
         goto out_no_fd;
     }
-
-    // Get size per LBA
-    // ioctl(fd, BLKPBSZGET, &phys_sector_size);
-    // std::cout << phys_sector_size << std::endl;
 
     cout << endl
          << "STA: " << slba;
@@ -190,125 +154,28 @@ int nvme_operation_handler(__u64 slba, __u64 size, unsigned short op, void *data
             nblock = (size >> 9);
             size = 0;
         }
-#if (posixMemalignFeat == 0 && asyncFeat == 1)
-        if (op == 1){
-            memcpy(data_pointers[pointer_idx], data, (nblock << 9));
-        }
-#endif
         switch (op)
         {
         case 0:
-#if asyncFeat
-#if (posixMemalignFeat == 0)
-            asyncFutures.push_back(std::async(std::launch::async, nvme_read, fd, slba, nblock, control, 0, 0, 0, 0, data_pointers[pointer_idx], nullptr));
-#else
-            asyncFutures.push_back(std::async(std::launch::async, nvme_read, fd, slba, nblock, control, 0, 0, 0, 0, newData, nullptr));
-#endif
-#else
             returnVal = nvme_read(fd, slba, nblock, control, 0, 0, 0, 0, newData, nullptr);
             assert(returnVal == 0);
-#endif
             break;
         case 1:
-#if asyncFeat
-#if (posixMemalignFeat == 0)
-            asyncFutures.push_back(std::async(std::launch::async, nvme_write, fd, slba, nblock, control, 0, 0, 0, 0, data_pointers[pointer_idx], nullptr));
-#else
-            asyncFutures.push_back(std::async(std::launch::async, nvme_write, fd, slba, nblock, control, 0, 0, 0, 0, newData, nullptr));
-#endif
-#else
             returnVal = nvme_write(fd, slba, nblock, control, 0, 0, 0, 0, newData, nullptr);
             assert(returnVal == 0);
-#endif
             break;
         default:
             assert(0);
             break;
         }
-#if (posixMemalignFeat == 0 && asyncFeat == 1)
-        pointer_idx++;
-#endif
         newData += (nblock << 9);
         slba += nblock;
     }
     cout << ", END: " << slba << endl;
-#if asyncFeat
-    for (auto &future : asyncFutures)
-    {
-        int result = future.get();
-        if (result != 0)
-        {
-            perror("nvme_write/read failed");
-            returnVal = -1;
-            assert(0);
-        }
-    }
-#if (posixMemalignFeat == 0)
-    for (auto &dataBuffer : data_pointers)
-    {
-        assert(backupSize != 0);
-        if ((backupSize >> 9) > chunkSize)
-        {
-            nblock = chunkSize;
-            backupSize -= (nblock << 9);
-        }
-        else
-        {
-            nblock = (backupSize >> 9);
-            backupSize = 0;
-        }
-        if (op == 0){
-            memcpy(data, dataBuffer, (nblock << 9));
-        }
-        free(dataBuffer);
-    }
-    data_pointers.clear();
-#endif
-#endif
+
 out:
     close(fd);
 out_no_fd:
     assert(returnVal == 0);
     return returnVal;
 }
-
-// int main()
-// {
-//     int fd = open("/dev/nvme0n1", O_RDWR, 0);
-//     unsigned char* wptr = new unsigned char[33554432]{0};
-//     unsigned char* rptr = new unsigned char[33554432]{0};
-//     std::random_device rd;
-//     std::mt19937 gen(rd());
-//     std::uniform_int_distribution<unsigned int> dis(0x00, 0xFF);
-//     for (int k = 0; k < 33554432; k++){
-//         wptr[k] = dis(gen);
-//         // printf("read: slba[%d]=0x%d\n", k, wptr[k]);
-//     }
-//     auto start = chrono::steady_clock::now();
-//     auto mid = chrono::steady_clock::now();
-//     for (int i =0; i < 1; i++){
-//         // std::cout << i << std::endl;
-//         if(nvme_operation_handler(0, 33554432, 1, wptr)){
-//             perror("write fail");
-//         }
-//         mid = chrono::steady_clock::now();
-//         if(nvme_operation_handler(0, 33554432, 0, rptr)){
-//             perror("read fail");
-//         }
-//         for (int k = 0; k < 100; k++){
-//             if (wptr[k] != rptr[k]){
-//                 assert(0);
-//             }
-
-//         }
-//     }
-//     auto end = chrono::steady_clock::now();
-//     // Calculating total time taken by the program.
-//     auto diff = mid - start;
-//     auto diff2 = end - mid;
-//     cout << chrono::duration <double, milli> (diff).count() << " ms" << endl;
-//     cout << chrono::duration <double, milli> (diff2).count() << " ms" << endl;
-//     delete [] wptr;
-//     delete [] rptr;
-//     return 0;
-// }

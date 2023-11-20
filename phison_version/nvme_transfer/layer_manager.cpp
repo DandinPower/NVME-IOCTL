@@ -12,9 +12,10 @@
 
 #define assertm(exp, msg) assert(((void)msg, exp))
 #define debugCompare 0
+#define returnLBAonly 0
 #define currentIOMethod 0
-#define libAIOasync 0
-#define libAIOPhysical 0
+#define libAIOasync 1
+#define libAIOPhysical 1
 
 void callback_n(int &x)
 {
@@ -47,7 +48,7 @@ layerVecMap::~layerVecMap()
     // exit
 }
 
-int layerVecMap::parsefromFileName(const char *fileName, unsigned short op, void *data, unsigned long long size)
+unsigned long long layerVecMap::parsefromFileName(const char *fileName, unsigned short op, void *data, unsigned long long size)
 {
     layerInfoMgr tempLayerInfoMgr;
     string tempLayer;
@@ -59,7 +60,9 @@ int layerVecMap::parsefromFileName(const char *fileName, unsigned short op, void
     auto iterForLayerMgr = instance.layerMgr.begin();
     uint32_t crc = 0xFFFFFFFF;
     int returnVal = 0;
-
+#if libAIOasync
+    vector<int> fdArray;
+#endif
     cout << "[OP]" << op << ", FILE:" << fileName << ", ";
 
     // ------------STEP1: USE slash("/") to parse file path
@@ -249,6 +252,7 @@ int layerVecMap::parsefromFileName(const char *fileName, unsigned short op, void
         size = mapSize;
     cout << "LBA:" << currentLBA << ", SIZE: " << size;
     // ------------STEP4: Gen CRC and store in struct if current IO operation is "Write"
+#if (returnLBAonly == 0)
     if (op == 1)
     {
         crc = genCRCfromData(data, size);
@@ -288,7 +292,11 @@ int layerVecMap::parsefromFileName(const char *fileName, unsigned short op, void
     }
 #if currentIOMethod == METHOD_IOCTL
     // ------------STEP6: Call NVME handler to execute IOCTL function
+    // char *write_buffer = new char[size]{0};
+    // generate_random_data(write_buffer, size);
+    // memset(write_buffer, 0x0, size);
     returnVal = nvme_operation_handler(currentLBA, size, op, data);
+    // delete[] write_buffer;
 #else
     AIOAsyncIO *aios = new AIOAsyncIO(32);
     int n = 0;
@@ -298,13 +306,33 @@ int layerVecMap::parsefromFileName(const char *fileName, unsigned short op, void
         auto fn = std::bind(callback_n, std::ref(n));
 #if libAIOPhysical
         int fd = open("/dev/nvme0n1", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+        if (fd == -1){
+            perror("open fail");
+        }
+        fdArray.push_back(fd);
 #else
-        int fd = open(fileName, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+        string copyFileName(fileName);
+        size_t firstDotPos = copyFileName.find(".");
+        string newFileName = copyFileName.substr(0,firstDotPos) + "_" + to_string(i) + copyFileName.substr(firstDotPos);
+        const char *cstr = newFileName.c_str();
+        int fd = open(cstr, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+        if (fd == -1){
+            perror("open fail");
+        }
+        fdArray.push_back(fd);
 #endif
         if (op == 1){
+#if libAIOPhysical
             aios->write(fd, data, static_cast<unsigned long>(size), (currentLBA << 9) + offset, fn);
+#else
+            aios->write(fd, data, static_cast<unsigned long>(size), 0, fn);
+#endif
         } else {
+#if libAIOPhysical
             aios->read(fd, data, static_cast<unsigned long>(size), (currentLBA << 9) + offset, fn);
+#else
+            aios->read(fd, data, static_cast<unsigned long>(size), 0, fn);
+#endif
         }
         offset += size;
     }
@@ -313,12 +341,20 @@ int layerVecMap::parsefromFileName(const char *fileName, unsigned short op, void
     } else {
         aios->sync_read_events();
     }
+    for (auto &fd : fdArray){
+        close(fd);
+    }
+    fdArray.clear();
 #else
 #if libAIOPhysical
     int fd = open("/dev/nvme0n1", O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
 #else
     int fd = open(fileName, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    
 #endif
+    if (fd == -1){
+        perror("open fail");
+    }
     auto fn = bind(callback_n, std::ref(n));
     if (op == 1) {
 #if libAIOPhysical
@@ -402,6 +438,9 @@ int layerVecMap::parsefromFileName(const char *fileName, unsigned short op, void
 #endif
     cout << endl;
     return returnVal;
+#else
+    return currentLBA;
+#endif
 }
 
 uint32_t layerVecMap::genCRCfromData(void *data, unsigned long long size)
