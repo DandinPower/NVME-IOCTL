@@ -946,22 +946,39 @@ static inline bool page_is_mergeable(const struct bio_vec *bv,
 static bool __bio_try_merge_page(struct bio *bio, struct page *page,
 		unsigned int len, unsigned int off, bool *same_page)
 {
-	if (WARN_ON_ONCE(bio_flagged(bio, BIO_CLONED)))
+	if (WARN_ON_ONCE(bio_flagged(bio, BIO_CLONED))) {
+		// // LIAW ADD START
+		// printk(KERN_INFO "LIAW: __bio_try_merge_page: WARN_ON_ONCE\n");
+		// // LIAW ADD END
 		return false;
+	}
 
 	if (bio->bi_vcnt > 0) {
 		struct bio_vec *bv = &bio->bi_io_vec[bio->bi_vcnt - 1];
 
 		if (page_is_mergeable(bv, page, len, off, same_page)) {
 			if (bio->bi_iter.bi_size > UINT_MAX - len) {
+				// // LIAW ADD START
+				// printk(KERN_INFO "LIAW: __bio_try_merge_page: bio->bi_iter.bi_size > UINT_MAX - len\n");
+				// // LIAW ADD END
 				*same_page = false;
 				return false;
 			}
+
+			// LIAW ADD START
+			printk(KERN_INFO "LIAW: __bio_try_merge_page: bio->bi_iter.bi_size=%d, len=%d\n", bio->bi_iter.bi_size, len);
+			// LIAW ADD END
 			bv->bv_len += len;
 			bio->bi_iter.bi_size += len;
 			return true;
 		}
+		else {
+			// // LIAW ADD START
+			// printk(KERN_INFO "LIAW: page_is_mergeable: return false\n");
+			// // LIAW ADD END
+		}
 	}
+
 	return false;
 }
 
@@ -979,10 +996,18 @@ static bool bio_try_merge_hw_seg(struct request_queue *q, struct bio *bio,
 	phys_addr_t addr1 = page_to_phys(bv->bv_page) + bv->bv_offset;
 	phys_addr_t addr2 = page_to_phys(page) + offset + len - 1;
 
-	if ((addr1 | mask) != (addr2 | mask))
+	if ((addr1 | mask) != (addr2 | mask)) {
+		// LIAW ADD START
+		printk(KERN_INFO "LIAW: bio_try_merge_hw_seg: (addr1 | mask) != (addr2 | mask)\n");
+		// LIAW ADD END
 		return false;
-	if (bv->bv_len + len > queue_max_segment_size(q))
+	}
+	if (bv->bv_len + len > queue_max_segment_size(q)) {
+		// LIAW ADD START
+		printk(KERN_INFO "LIAW: bio_try_merge_hw_seg: bv->bv_len + len > queue_max_segment_size(q)\n");
+		// LIAW ADD END
 		return false;
+	}
 	return __bio_try_merge_page(bio, page, len, offset, same_page);
 }
 

@@ -47,7 +47,7 @@ int main()
     u_int16_t result = 0;
     char *wptr = new char[262144000];
     char *rptr = new char[262144000]{0};
-    u_int16_t test_loop = 291;
+    u_int16_t test_loop = 1;
     double r_speed = 0, w_speed = 0; 
     ushort *wData = reinterpret_cast<ushort *>(wptr);
     ushort *rData = reinterpret_cast<ushort *>(rptr);

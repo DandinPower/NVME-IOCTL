@@ -139,7 +139,7 @@ int nvme_operation_handler(__u64 slba, __u64 size, unsigned short op, void *data
 {
 
     // ------------STEP1: Open NVME device
-    int fd = open("/dev/nvme0n1", O_RDWR | O_DIRECT | O_SYNC, 0);
+    int fd = open("/dev/nvme3n1", O_RDWR | O_DIRECT | O_SYNC, 0);
     int returnVal = 0;
     __u16 nblock = 0;
     __u16 control = 1 << 14; // force_unit_access
