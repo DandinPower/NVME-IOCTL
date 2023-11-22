@@ -3,7 +3,7 @@
 # Variables to count success and failure
 success_count=0
 failure_count=0
-total_runs=100  # Adjust this to the number of times you want to run the command
+total_runs=1000  # Adjust this to the number of times you want to run the command
 
 # Clean and build the program
 make clean

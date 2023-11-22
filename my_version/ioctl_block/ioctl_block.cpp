@@ -40,8 +40,8 @@ int main(void) {
 
     // allocate the buffer
     char *write_buffer, *read_buffer; 
-    check_error(posix_memalign((void**)&write_buffer, NVME_SECTOR_SIZE, buffer_size) != 0, "Failed to allocate write buffer");
-    check_error(posix_memalign((void**)&read_buffer, NVME_SECTOR_SIZE, buffer_size) != 0, "Failed to allocate read buffer");
+    check_error(posix_memalign((void**)&write_buffer, 4096, buffer_size) != 0, "Failed to allocate write buffer");
+    check_error(posix_memalign((void**)&read_buffer, 4096, buffer_size) != 0, "Failed to allocate read buffer");
 
     // initialize the buffer with random data
     generate_random_data(write_buffer, buffer_size);

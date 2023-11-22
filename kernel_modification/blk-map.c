@@ -265,6 +265,9 @@ static struct bio *blk_rq_map_bio_alloc(struct request *rq,
 static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
 		gfp_t gfp_mask)
 {
+	// LIAW ADD START
+	printk(KERN_INFO "LIAW: bio_map_user_iov: start\n");
+	// LIAW ADD END
 	unsigned int max_sectors = queue_max_hw_sectors(rq->q);
 	unsigned int nr_vecs = iov_iter_npages(iter, BIO_MAX_VECS);
 	unsigned int gup_flags = 0;
@@ -272,17 +275,32 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
 	int ret;
 	int j;
 
-	if (!iov_iter_count(iter))
+	// LIAW ADD START
+	printk(KERN_INFO "LIAW: bio_map_user_iov: nr_vecs = %d, max_sectors = %d\n", nr_vecs, max_sectors);
+	// LIAW ADD END
+
+	if (!iov_iter_count(iter)) {
+		// LIAW ADD START
+		printk(KERN_INFO "LIAW: bio_map_user_iov: iov_iter_count = 0\n");
+		// LIAW ADD END
 		return -EINVAL;
+	}
 
 	bio = blk_rq_map_bio_alloc(rq, nr_vecs, gfp_mask);
-	if (bio == NULL)
+	if (bio == NULL) {
+		// LIAW ADD START
+		printk(KERN_INFO "LIAW: bio_map_user_iov: blk_rq_map_bio_alloc: bio == NULL\n");
+		// LIAW ADD END
 		return -ENOMEM;
+	}
 
 	if (blk_queue_pci_p2pdma(rq->q))
 		gup_flags |= FOLL_PCI_P2PDMA;
 
 	while (iov_iter_count(iter)) {
+		// LIAW ADD START
+		printk(KERN_INFO "LIAW: bio_map_user_iov: while:iov_iter_count = %lu\n", iov_iter_count(iter));
+		// LIAW ADD END
 		struct page **pages, *stack_pages[UIO_FASTIOV];
 		ssize_t bytes;
 		size_t offs;
@@ -296,12 +314,20 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
 			bytes = iov_iter_get_pages_alloc(iter, &pages,
 						LONG_MAX, &offs, gup_flags);
 		}
+		// LIAW ADD START
+		printk(KERN_INFO "LIAW: bio_map_user_iov: bytes = %ld\n", bytes);
+		// LIAW ADD END
 		if (unlikely(bytes <= 0)) {
+			
 			ret = bytes ? bytes : -EFAULT;
 			goto out_unmap;
 		}
 
 		npages = DIV_ROUND_UP(offs + bytes, PAGE_SIZE);
+
+		// LIAW ADD START
+		printk(KERN_INFO "LIAW: bio_map_user_iov: npages = %d\n", npages);
+		// LIAW ADD END
 
 		if (unlikely(offs & queue_dma_alignment(rq->q)))
 			j = 0;
@@ -313,6 +339,10 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
 
 				if (n > bytes)
 					n = bytes;
+				
+				// LIAW ADD START
+				// if @n (len), @offs (offset) cross pages, then @same_page = true
+				// LIAW ADD END
 
 				if (!bio_add_hw_page(rq->q, bio, page, n, offs,
 						     max_sectors, &same_page)) {
@@ -324,7 +354,12 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
 				bytes -= n;
 				offs = 0;
 			}
-		}
+		} 
+
+		// LIAW ADD START
+		printk(KERN_INFO "LIAW: bio_map_user_iov: j = %d, bytes = %d\n", j, bytes);
+		// LIAW ADD END
+
 		/*
 		 * release the pages we didn't map into the bio, if any
 		 */
@@ -339,7 +374,16 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
 		}
 	}
 
+	// LIAW ADD START
+	printk(KERN_INFO "LIAW: bio_map_user_iov: ret before blk_rq_append_bio = %d\n", ret);
+	// LIAW ADD END
+
 	ret = blk_rq_append_bio(rq, bio);
+
+	// LIAW ADD START
+	printk(KERN_INFO "LIAW: bio_map_user_iov: ret after blk_rq_append_bio = %d\n", ret);
+	// LIAW ADD END
+
 	if (ret)
 		goto out_unmap;
 	return 0;
@@ -657,7 +701,7 @@ int blk_rq_map_user_iov(struct request_queue *q, struct request *rq,
 	}
 
 	// LIAW ADD START
-	printk(KERN_INFO "blk_rq_map_user_iov: copy = %d; ret = %d\n", copy, ret);
+	printk(KERN_INFO "LIAW: blk_rq_map_user_iov: copy = %d; ret = %d\n", copy, ret);
 	// LIAW ADD END
 
 	i = *iter;
@@ -672,7 +716,7 @@ int blk_rq_map_user_iov(struct request_queue *q, struct request *rq,
 			bio = rq->bio;
 		
 		// LIAW ADD START
-		printk(KERN_INFO "blk_rq_map_user_iov: do loop: ret = %d\n", ret);
+		printk(KERN_INFO "LIAW: blk_rq_map_user_iov: do loop: ret = %d\n", ret);
 		// LIAW ADD END
 
 	} while (iov_iter_count(&i));
@@ -708,13 +752,13 @@ int blk_rq_map_user_io(struct request *req, struct rq_map_data *map_data,
 {
 	int ret = 0;
 	// LIAW ADD START
-	printk(KERN_INFO "blk_rq_map_user_io: start: ret = %d\n", ret);
+	printk(KERN_INFO "LIAW: blk_rq_map_user_io: start: ret = %d\n", ret);
 	// LIAW ADD END
 
 	if (vec) {
 		
 		// LIAW ADD START
-		printk(KERN_INFO "blk_rq_map_user_io: vec = true\n");
+		printk(KERN_INFO "LIAW: blk_rq_map_user_io: vec = true\n");
 		// LIAW ADD END
 
 		struct iovec fast_iov[UIO_FASTIOV];
@@ -725,7 +769,7 @@ int blk_rq_map_user_io(struct request *req, struct rq_map_data *map_data,
 				UIO_FASTIOV, &iov, &iter);
 		if (ret < 0) {
 			// LIAW ADD START
-			printk(KERN_INFO "blk_rq_map_user_io: import_iovec: ret: %d\n", ret);
+			printk(KERN_INFO "LIAW: blk_rq_map_user_io: import_iovec: ret: %d\n", ret);
 			// LIAW ADD END
 			return ret;
 		}
@@ -736,7 +780,7 @@ int blk_rq_map_user_io(struct request *req, struct rq_map_data *map_data,
 			if (check_iter_count && !iov_iter_count(&iter)) {
 
 				// LIAW ADD START
-				printk(KERN_INFO "blk_rq_map_user_io: iov_iter_count = 0\n");
+				printk(KERN_INFO "LIAW: blk_rq_map_user_io: iov_iter_count = 0\n");
 				// LIAW ADD END
 
 				kfree(iov);
@@ -748,7 +792,7 @@ int blk_rq_map_user_io(struct request *req, struct rq_map_data *map_data,
 				gfp_mask);
 
 		// LIAW ADD START
-		printk(KERN_INFO "blk_rq_map_user_io: blk_rq_map_user_iov: ret: %d\n", ret);
+		printk(KERN_INFO "LIAW: blk_rq_map_user_io: blk_rq_map_user_iov: ret: %d\n", ret);
 		// LIAW ADD END
 		
 		kfree(iov);
@@ -757,12 +801,12 @@ int blk_rq_map_user_io(struct request *req, struct rq_map_data *map_data,
 				gfp_mask);
 
 		// LIAW ADD START
-		printk(KERN_INFO "blk_rq_map_user_io: buf_len = %lu, ret: %d\n", buf_len, ret);
+		printk(KERN_INFO "LIAW: blk_rq_map_user_io: buf_len = %lu, ret: %d\n", buf_len, ret);
 		// LIAW ADD END
 	}
 
 	// LIAW ADD START
-	printk(KERN_INFO "blk_rq_map_user_io: end: ret = %d\n", ret);
+	printk(KERN_INFO "LIAW: blk_rq_map_user_io: end: ret = %d\n", ret);
 	// LIAW ADD END
 
 	return ret;
