@@ -965,9 +965,9 @@ static bool __bio_try_merge_page(struct bio *bio, struct page *page,
 				return false;
 			}
 
-			// LIAW ADD START
-			printk(KERN_INFO "LIAW: __bio_try_merge_page: bio->bi_iter.bi_size=%d, len=%d\n", bio->bi_iter.bi_size, len);
-			// LIAW ADD END
+			// // LIAW ADD START
+			// printk(KERN_INFO "LIAW: __bio_try_merge_page: bio->bi_iter.bi_size=%d, len=%d\n", bio->bi_iter.bi_size, len);
+			// // LIAW ADD END
 			bv->bv_len += len;
 			bio->bi_iter.bi_size += len;
 			return true;
@@ -997,15 +997,15 @@ static bool bio_try_merge_hw_seg(struct request_queue *q, struct bio *bio,
 	phys_addr_t addr2 = page_to_phys(page) + offset + len - 1;
 
 	if ((addr1 | mask) != (addr2 | mask)) {
-		// LIAW ADD START
-		printk(KERN_INFO "LIAW: bio_try_merge_hw_seg: (addr1 | mask) != (addr2 | mask)\n");
-		// LIAW ADD END
+		// // LIAW ADD START
+		// printk(KERN_INFO "LIAW: bio_try_merge_hw_seg: (addr1 | mask) != (addr2 | mask)\n");
+		// // LIAW ADD END
 		return false;
 	}
 	if (bv->bv_len + len > queue_max_segment_size(q)) {
-		// LIAW ADD START
-		printk(KERN_INFO "LIAW: bio_try_merge_hw_seg: bv->bv_len + len > queue_max_segment_size(q)\n");
-		// LIAW ADD END
+		// // LIAW ADD START
+		// printk(KERN_INFO "LIAW: bio_try_merge_hw_seg: bv->bv_len + len > queue_max_segment_size(q)\n");
+		// // LIAW ADD END
 		return false;
 	}
 	return __bio_try_merge_page(bio, page, len, offset, same_page);
@@ -1031,26 +1031,31 @@ int bio_add_hw_page(struct request_queue *q, struct bio *bio,
 	struct bio_vec *bvec;
 
 	if (WARN_ON_ONCE(bio_flagged(bio, BIO_CLONED))) {
-		// LIAW ADD START
-		printk(KERN_INFO "LIAW: bio_add_hw_page: WARN_ON_ONCE\n");
-		// LIAW ADD END
+		// // LIAW ADD START
+		// printk(KERN_INFO "LIAW: bio_add_hw_page: WARN_ON_ONCE\n");
+		// // LIAW ADD END
 		return 0;
 	}
 
 	if (((bio->bi_iter.bi_size + len) >> 9) > max_sectors) {
-		// LIAW ADD START
-		printk(KERN_INFO "LIAW: bio_add_hw_page: bio->bi_iter.bi_size=%d, len=%d\n", bio->bi_iter.bi_size, len);
-		printk(KERN_INFO "LIAW: bio_add_hw_page: %d > %d)\n", (bio->bi_iter.bi_size + len) >> 9, max_sectors);
-		// LIAW ADD END
+		// // LIAW ADD START
+		// printk(KERN_INFO "LIAW: bio_add_hw_page: bio->bi_iter.bi_size=%d, len=%d\n", bio->bi_iter.bi_size, len);
+		// printk(KERN_INFO "LIAW: bio_add_hw_page: %d > %d)\n", (bio->bi_iter.bi_size + len) >> 9, max_sectors);
+		// // LIAW ADD END
 		return 0;
 	}
 
 	if (bio->bi_vcnt > 0) {
 		if (bio_try_merge_hw_seg(q, bio, page, len, offset, same_page)) {
-			// LIAW ADD START
-			printk(KERN_INFO "LIAW: bio_add_hw_page: bio_try_merge_hw_seg\n");
-			// LIAW ADD END
+			// // LIAW ADD START
+			// printk(KERN_INFO "LIAW: bio_add_hw_page: bio_try_merge_hw_seg success, bio_v size: %d\n", bio->bi_iter.bi_size += len;);
+			// // LIAW ADD END
 			return len;
+		}
+		else {
+			// // LIAW ADD START
+			// printk(KERN_INFO "LIAW: bio_add_hw_page: bio_try_merge_hw_seg fail\n");
+			// // LIAW ADD END
 		}
 
 		/*
@@ -1059,24 +1064,24 @@ int bio_add_hw_page(struct request_queue *q, struct bio *bio,
 		 */
 		bvec = &bio->bi_io_vec[bio->bi_vcnt - 1];
 		if (bvec_gap_to_prev(&q->limits, bvec, offset)) {
-			// LIAW ADD START
-			printk(KERN_INFO "LIAW: bio_add_hw_page: bvec_gap_to_prev\n");
-			// LIAW ADD END
+			// // LIAW ADD START
+			// printk(KERN_INFO "LIAW: bio_add_hw_page: bvec_gap_to_prev\n");
+			// // LIAW ADD END
 			return 0;
 		}
 	}
 
 	if (bio_full(bio, len)) {
-		// LIAW ADD START
-		printk(KERN_INFO "LIAW: bio_add_hw_page: bio_full\n");
-		// LIAW ADD END
+		// // LIAW ADD START
+		// printk(KERN_INFO "LIAW: bio_add_hw_page: bio_full\n");
+		// // LIAW ADD END
 		return 0;
 	}
 
 	if (bio->bi_vcnt >= queue_max_segments(q)) {
-		// LIAW ADD START
-		printk(KERN_INFO "LIAW: bio_add_hw_page: bio->bi_vcnt >= queue_max_segments(q)\n");
-		// LIAW ADD END
+		// // LIAW ADD START
+		// printk(KERN_INFO "LIAW: bio_add_hw_page: bio->bi_vcnt >= queue_max_segments(q)\n");
+		// // LIAW ADD END
 		return 0;
 	}
 
@@ -1087,9 +1092,7 @@ int bio_add_hw_page(struct request_queue *q, struct bio *bio,
 	bio->bi_vcnt++;
 	bio->bi_iter.bi_size += len;
 
-	// LIAW ADD START
-	printk(KERN_INFO "LIAW: bio_add_hw_page: return len\n");
-	// LIAW ADD END
+	
 
 	return len;
 }

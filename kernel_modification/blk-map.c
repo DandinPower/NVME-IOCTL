@@ -310,9 +310,21 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
 			pages = stack_pages;
 			bytes = iov_iter_get_pages(iter, pages, LONG_MAX,
 						   nr_vecs, &offs, gup_flags);
+			
+			// LIAW ADD START
+			printk(KERN_INFO "LIAW: allocate pages from stack_pages\n, ARRAY_SIZE(stack_pages) = %d", ARRAY_SIZE(stack_pages));
+			// LIAW ADD END
+
 		} else {
-			bytes = iov_iter_get_pages_alloc(iter, &pages,
+			// LIAW ADD START
+			// original
+			// bytes = iov_iter_get_pages_alloc(iter, &pages,
+			// 			LONG_MAX, &offs, gup_flags);
+			// printk(KERN_INFO "LIAW: allocate pages from iov_iter_get_pages_alloc function\n");
+			bytes = iov_iter_get_pages_alloc_contiguous(iter, &pages,
 						LONG_MAX, &offs, gup_flags);
+			printk(KERN_INFO "LIAW: allocate pages from iov_iter_get_pages_alloc_contiguous function\n");
+			// LIAW ADD END			
 		}
 		// LIAW ADD START
 		printk(KERN_INFO "LIAW: bio_map_user_iov: bytes = %ld\n", bytes);
@@ -350,6 +362,10 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
 						put_page(page);
 					break;
 				}
+
+				// LIAW ADD START
+				printk(KERN_INFO "LIAW: bio_add_hw_page:  vec_count: %d, size: %d\n", bio->bi_vcnt, bio->bi_iter.bi_size);
+				// LIAW ADD END
 
 				bytes -= n;
 				offs = 0;
