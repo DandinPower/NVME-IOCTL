@@ -908,22 +908,49 @@ static inline bool page_is_mergeable(const struct bio_vec *bv,
 		struct page *page, unsigned int len, unsigned int off,
 		bool *same_page)
 {
+	// LIAW ADD START
+	int _ret;
+	// LIAW ADD END
 	size_t bv_end = bv->bv_offset + bv->bv_len;
 	phys_addr_t vec_end_addr = page_to_phys(bv->bv_page) + bv_end - 1;
 	phys_addr_t page_addr = page_to_phys(page);
 
-	if (vec_end_addr + 1 != page_addr + off)
+	if (vec_end_addr + 1 != page_addr + off) {
+		// // LIAW ADD START
+		// printk(KERN_INFO "LIAW: merge fail: vec_end_addr + 1 != page_addr + off\n");
+		// // LIAW ADD END
 		return false;
-	if (xen_domain() && !xen_biovec_phys_mergeable(bv, page))
+	}
+	if (xen_domain() && !xen_biovec_phys_mergeable(bv, page)) {
+		// // LIAW ADD START
+		// printk(KERN_INFO "LIAW: merge fail: xen_domain() && !xen_biovec_phys_mergeable(bv, page)\n");
+		// // LIAW ADD END
 		return false;
-	if (!zone_device_pages_have_same_pgmap(bv->bv_page, page))
+	}
+	if (!zone_device_pages_have_same_pgmap(bv->bv_page, page)) {
+		// // LIAW ADD START
+		// printk(KERN_INFO "LIAW: merge fail: !zone_device_pages_have_same_pgmap(bv->bv_page, page)\n");
+		// // LIAW ADD END
 		return false;
+	}
 
 	*same_page = ((vec_end_addr & PAGE_MASK) == page_addr);
 	if (*same_page)
 		return true;
-	else if (IS_ENABLED(CONFIG_KMSAN))
+	else if (IS_ENABLED(CONFIG_KMSAN)) {
+		// // LIAW ADD START
+		// printk(KERN_INFO "LIAW: merge fail: IS_ENABLED(CONFIG_KMSAN)\n");
+		// // LIAW ADD END
 		return false;
+	}
+
+	// LIAW ADD START
+	// _ret = (bv->bv_page + bv_end / PAGE_SIZE) == (page + off / PAGE_SIZE);
+	// if (_ret == 0) {
+	// 	printk(KERN_INFO "LIAW: merge fail: (bv->bv_page + bv_end / PAGE_SIZE) == (page + off / PAGE_SIZE)\n");
+	// }
+	// LIAW ADD END
+
 	return (bv->bv_page + bv_end / PAGE_SIZE) == (page + off / PAGE_SIZE);
 }
 
@@ -997,15 +1024,15 @@ static bool bio_try_merge_hw_seg(struct request_queue *q, struct bio *bio,
 	phys_addr_t addr2 = page_to_phys(page) + offset + len - 1;
 
 	if ((addr1 | mask) != (addr2 | mask)) {
-		// // LIAW ADD START
-		// printk(KERN_INFO "LIAW: bio_try_merge_hw_seg: (addr1 | mask) != (addr2 | mask)\n");
-		// // LIAW ADD END
+		// LIAW ADD START
+		printk(KERN_INFO "LIAW: merge fail: (addr1 | mask) != (addr2 | mask)\n");
+		// LIAW ADD END
 		return false;
 	}
 	if (bv->bv_len + len > queue_max_segment_size(q)) {
-		// // LIAW ADD START
-		// printk(KERN_INFO "LIAW: bio_try_merge_hw_seg: bv->bv_len + len > queue_max_segment_size(q)\n");
-		// // LIAW ADD END
+		// LIAW ADD START
+		printk(KERN_INFO "LIAW: merge fail: bv->bv_len + len > queue_max_segment_size(q)\n");
+		// LIAW ADD END
 		return false;
 	}
 	return __bio_try_merge_page(bio, page, len, offset, same_page);

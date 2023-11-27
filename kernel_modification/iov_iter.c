@@ -1484,6 +1484,7 @@ static ssize_t __iov_iter_get_pages_alloc(struct iov_iter *i,
 		res = get_user_pages_fast(addr, n, gup_flags, *pages);
 		if (unlikely(res <= 0))
 			return res;
+
 		maxsize = min_t(size_t, maxsize, res * PAGE_SIZE - *start);
 		iov_iter_advance(i, maxsize);
 		return maxsize;

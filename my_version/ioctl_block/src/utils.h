@@ -5,7 +5,7 @@
 #include <sys/ioctl.h>          // for ioctl
 #include <fcntl.h>              // for open
 #include <cassert>              // for assert
-// #include <unistd.h>             // for sleep
+#include <unistd.h>             // for sleep & close file
 
 // Function to check if a condition is met and print an error message if it is
 void check_error(bool condition, const std::string &msg, bool exit_on_error = false) {
