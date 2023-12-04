@@ -915,3 +915,4 @@ int blk_rq_map_kern(struct request_queue *q, struct request *rq, void *kbuf,
 	return ret;
 }
 EXPORT_SYMBOL(blk_rq_map_kern);
+     
