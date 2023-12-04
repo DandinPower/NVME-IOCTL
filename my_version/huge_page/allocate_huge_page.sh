@@ -1,0 +1,1 @@
+sudo sysctl vm.nr_hugepages=192

@@ -306,14 +306,6 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
 		size_t offs;
 		int npages;
 
-		// LIAW ADD START, but it seems not work
-		struct page *contiguous_pages = alloc_pages(gfp_mask, get_order(PAGE_SIZE * nr_vecs));
-
-		pages = &contiguous_pages;
-		bytes = iov_iter_get_pages(iter, pages, LONG_MAX,
-						   nr_vecs, &offs, gup_flags);
-		// LIAW ADD END
-
 		if (nr_vecs <= ARRAY_SIZE(stack_pages)) {
 			pages = stack_pages;
 			bytes = iov_iter_get_pages(iter, pages, LONG_MAX,
@@ -324,14 +316,14 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
 			// LIAW ADD END
 
 		} else {
-			// LIAW ADD START
-			// original
-			// bytes = iov_iter_get_pages_alloc(iter, &pages,
-			// 			LONG_MAX, &offs, gup_flags);
-			// printk(KERN_INFO "LIAW: allocate pages from iov_iter_get_pages_alloc function\n");
-			bytes = iov_iter_get_pages_alloc_contiguous(iter, &pages,
+			bytes = iov_iter_get_pages_alloc(iter, &pages,
 						LONG_MAX, &offs, gup_flags);
-			printk(KERN_INFO "LIAW: allocate pages from iov_iter_get_pages_alloc_contiguous function\n");
+			printk(KERN_INFO "LIAW: allocate pages from iov_iter_get_pages_alloc function\n");
+		
+			// LIAW ADD START
+			// bytes = iov_iter_get_pages_alloc_contiguous(iter, &pages,
+			// 			LONG_MAX, &offs, gup_flags);
+			// printk(KERN_INFO "LIAW: allocate pages from iov_iter_get_pages_alloc_contiguous function\n");
 			// LIAW ADD END			
 		}
 		// LIAW ADD START
@@ -360,10 +352,6 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
 				if (n > bytes)
 					n = bytes;
 				
-				// LIAW ADD START
-				// if @n (len), @offs (offset) cross pages, then @same_page = true
-				// LIAW ADD END
-
 				if (!bio_add_hw_page(rq->q, bio, page, n, offs,
 						     max_sectors, &same_page)) {
 					if (same_page)
@@ -915,4 +903,3 @@ int blk_rq_map_kern(struct request_queue *q, struct request *rq, void *kbuf,
 	return ret;
 }
 EXPORT_SYMBOL(blk_rq_map_kern);
-     

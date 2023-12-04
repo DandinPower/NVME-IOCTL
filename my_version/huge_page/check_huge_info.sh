@@ -1,0 +1,1 @@
+cat /proc/meminfo | grep -i huge

@@ -2,6 +2,10 @@
 #include <config.h>
 #include <phison.h>
 
+#include <sys/mman.h>
+#include <stdio.h>
+#include <memory.h>
+
 bool submit_io(int fd, char* buffer, OPCODE io_type, unsigned short nblocks, unsigned long long currentLba) {
     // get opcode value based on the OPCODE enum
     __u8 opcode = get_opcode(io_type);
@@ -43,11 +47,19 @@ int main(void) {
     check_error(posix_memalign((void**)&write_buffer, NVME_SECTOR_SIZE, buffer_size) != 0, "Failed to allocate write buffer");
     check_error(posix_memalign((void**)&read_buffer, NVME_SECTOR_SIZE, buffer_size) != 0, "Failed to allocate read buffer");
 
+    // write_buffer = (char*)mmap(NULL, buffer_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
+    // if (write_buffer == MAP_FAILED) {
+    //     perror("mmap");
+    //     return -1;
+    // }
+
+
     // initialize the buffer with random data
     generate_random_data(write_buffer, buffer_size);
 
     bool ret = submit_io(fd, write_buffer, WRITE, MAX_BLOCK_NUM, START_LBA);
     free(write_buffer);
+    // munmap(write_buffer, buffer_size);
     close(fd);
     if(ret)
         return EXIT_FAILURE;
