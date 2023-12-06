@@ -28,9 +28,9 @@
 #include <functional>
 #include <chrono>
 #include <sys/mman.h> // for mmap
-#define asyncFeat 0
-#define chunkSize 0xFF8
-#define posixMemalignFeat 1
+#define asyncFeat 1
+#define chunkSize 4096
+#define posixMemalignFeat 0
 #if (asyncFeat == 1 && posixMemalignFeat == 1)
 #error "NOT HAVE THIS SETTING IN CURRENT CODE"
 #endif
@@ -59,7 +59,7 @@ int nvme_io(int fd, __u8 opcode, __u64 slba, __u16 nblocks, __u16 control,
         .opcode = opcode,
         .flags = 0,
         .control = control,
-        .nblocks = nblocks,
+        .nblocks = nblocks - 1,
         .rsvd = 0,
         .metadata = (__u64)(uintptr_t)metadata,
         .addr = (__u64)(uintptr_t)data,
@@ -157,7 +157,7 @@ int nvme_operation_handler(__u64 slba, __u64 size, unsigned short op, void *data
     std::vector<std::future<int>> asyncFutures;
 #if (posixMemalignFeat == 0)
     std::vector<void*> data_pointers;
-    int num_buffers = (size >> 9) / chunkSize + 1;
+    int num_buffers = (size >> 9) / chunkSize;
     int pointer_idx = 0;
     for (int i = 0; i < num_buffers; ++i) {
         void* data_ptr;

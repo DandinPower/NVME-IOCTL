@@ -454,6 +454,7 @@ uint32_t layerVecMap::genCRCfromData(void *data, unsigned long long size)
         CRC = crc32::update(table, CRC, newData, 1);
         newData++;
     }
+    // CRC = crc32::update(table, CRC, (newData + size - 8), 8);
     return CRC;
 }
 

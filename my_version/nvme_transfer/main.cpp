@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
     test_file_bytes = atoi(argv[2]);
     test_file_number = atoi(argv[3]);
     int aligned_test_file_bytes = get_aligned_test_file_bytes(test_file_bytes);
-    int aligned_total_bytes = aligned_test_file_bytes * test_file_number;
+    size_t aligned_total_bytes = aligned_test_file_bytes * test_file_number;
     printf("Test Configurations:\n");
     printf("--------------------\n");
     printf("io strategy: %s\n", (IOCTL_STRATEGY == 0) ? "libaio" : "ioctl");
@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
     printf("nvme sector size: %d\n", NVME_SECTOR_SIZE);
     printf("device path: %s\ntest file bytes: %d\ntest file number: %d\n", device_path.c_str(), test_file_bytes, test_file_number);
     printf("aligned test file bytes: %d\n", aligned_test_file_bytes);
-    printf("aligned total bytes: %d\n", aligned_total_bytes);
+    printf("aligned total bytes: %lld\n", aligned_total_bytes);
     printf("--------------------\n");
 
 #if HUGE_PAGE_STRATEGY
