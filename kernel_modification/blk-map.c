@@ -307,13 +307,16 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
 		int npages;
 
 		if (nr_vecs <= ARRAY_SIZE(stack_pages)) {
-			pages = stack_pages;
-			bytes = iov_iter_get_pages(iter, pages, LONG_MAX,
-						   nr_vecs, &offs, gup_flags);
+			// pages = stack_pages;
+			// bytes = iov_iter_get_pages(iter, pages, LONG_MAX,
+			// 			   nr_vecs, &offs, gup_flags);
 			
-			// LIAW ADD START
-			printk(KERN_INFO "LIAW: allocate pages from stack_pages\n, ARRAY_SIZE(stack_pages) = %d", ARRAY_SIZE(stack_pages));
-			// LIAW ADD END
+			// // LIAW ADD START
+			// printk(KERN_INFO "LIAW: allocate pages from stack_pages, ARRAY_SIZE(stack_pages) = %d", ARRAY_SIZE(stack_pages));
+			// // LIAW ADD END
+			bytes = iov_iter_get_pages_alloc(iter, &pages,
+						LONG_MAX, &offs, gup_flags);
+			printk(KERN_INFO "LIAW: allocate pages from iov_iter_get_pages_alloc function\n");
 
 		} else {
 			bytes = iov_iter_get_pages_alloc(iter, &pages,
