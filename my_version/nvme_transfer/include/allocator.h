@@ -6,23 +6,21 @@
 #include <memory.h>
 
 /**
- * @brief Calculates the aligned size for a given test file size.
+ * @brief Calculates the aligned size for a given file size.
  *
- * This function aligns the size of a single test file to either the HUGE_PAGE_SIZE or the NVME_SECTOR_SIZE,
+ * This function aligns the size of a single file to either the HUGE_PAGE_SIZE or the NVME_SECTOR_SIZE,
  * depending on the HUGE_PAGE_STRATEGY flag.
  *
- * @param test_file_bytes The size of a single test file.
+ * @param file_bytes The size of a single file.
  * @return The aligned size of the test file.
  */
-int get_aligned_test_file_bytes(int test_file_bytes) {
+int get_aligned_file_bytes(int file_bytes) {
 #if HUGE_PAGE_STRATEGY
-    // the reason need to aligned nvme sector is too solve the bug that happen when sector size is larger than HUGE_PAGE_SIZE
-    test_file_bytes = get_aligned_size(NVME_SECTOR_SIZE, test_file_bytes);
-    test_file_bytes = get_aligned_size(HUGE_PAGE_SIZE, test_file_bytes);
+    file_bytes = get_aligned_size(HUGE_PAGE_SIZE, file_bytes);
 #else
-    test_file_bytes = get_aligned_size(NVME_SECTOR_SIZE, test_file_bytes);
+    file_bytes = get_aligned_size(NVME_SECTOR_SIZE, file_bytes);
 #endif
-    return test_file_bytes;
+    return file_bytes;
 }
 
 /**
