@@ -27,6 +27,7 @@
 #include <iostream>
 #include <functional>
 #include <chrono>
+#include <sys/mman.h> // for mmap
 #define asyncFeat 0
 #define chunkSize 0xFF8
 #define posixMemalignFeat 1
@@ -77,11 +78,14 @@ int nvme_write(int fd, __u64 slba, __u16 nblocks, __u16 control, __u32 dsmgmt,
 {
 #if posixMemalignFeat
     void *memptr2;
-    auto ret = posix_memalign(&memptr2, 512, ((nblocks + 1) << 9));
-    assert(ret == 0);
+    // auto ret = posix_memalign(&memptr2, 512, ((nblocks + 1) << 9));
+    // assert(ret == 0);
+    memptr2 = mmap(NULL, ((nblocks + 1) << 9), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
+    assert(memptr2 != MAP_FAILED);
     memcpy(memptr2, data, (nblocks << 9));
     auto returnVal = nvme_io(fd, nvme_cmd_write, slba, nblocks, control, dsmgmt, reftag, apptag, appmask, memptr2, metadata);
-    free(memptr2);
+    // free(memptr2);
+    munmap(memptr2, ((nblocks + 1) << 9));
     return returnVal;
 #else
     return nvme_io(fd, nvme_cmd_write, slba, nblocks, control, dsmgmt, reftag, apptag, appmask, data, metadata);
@@ -93,11 +97,14 @@ int nvme_read(int fd, __u64 slba, __u16 nblocks, __u16 control, __u32 dsmgmt,
 {
 #if posixMemalignFeat
     void *memptr;
-    auto ret = posix_memalign(&memptr, 512, ((nblocks + 1) << 9));
-    assert(ret == 0);
+    // auto ret = posix_memalign(&memptr, 512, ((nblocks + 1) << 9));
+    // assert(ret == 0);
+    memptr = mmap(NULL, ((nblocks + 1) << 9), PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
+    assert(memptr != MAP_FAILED);
     auto returnVal = nvme_io(fd, nvme_cmd_read, slba, nblocks, control, dsmgmt, reftag, apptag, appmask, memptr, metadata);
     memcpy(data, memptr, (nblocks << 9));
-    free(memptr);
+    // free(memptr);
+    munmap(memptr, ((nblocks + 1) << 9));
     return returnVal;
 #else
     return nvme_io(fd, nvme_cmd_read, slba, nblocks, control, dsmgmt, reftag, apptag, appmask, data, metadata);
@@ -154,10 +161,13 @@ int nvme_operation_handler(__u64 slba, __u64 size, unsigned short op, void *data
     int pointer_idx = 0;
     for (int i = 0; i < num_buffers; ++i) {
         void* data_ptr;
-        if (posix_memalign(&data_ptr, 512, (chunkSize + 1) << 9) != 0) {
-            std::cerr << "Memory allocation failed." << std::endl;
-            return 1;
-        }
+        data_ptr = mmap(NULL, (chunkSize + 1) << 9, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
+        assert(data_ptr != MAP_FAILED);
+
+        // if (posix_memalign(&data_ptr, 512, (chunkSize + 1) << 9) != 0) {
+        //     std::cerr << "Memory allocation failed." << std::endl;
+        //     return 1;
+        // }
         // save data ptr
         data_pointers.push_back(data_ptr);
     }
@@ -260,7 +270,8 @@ int nvme_operation_handler(__u64 slba, __u64 size, unsigned short op, void *data
         if (op == 0){
             memcpy(data, dataBuffer, (nblock << 9));
         }
-        free(dataBuffer);
+        // free(dataBuffer);
+        munmap(dataBuffer, (chunkSize + 1) << 9);
     }
     data_pointers.clear();
 #endif
