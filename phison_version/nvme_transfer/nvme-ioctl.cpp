@@ -161,7 +161,7 @@ int nvme_operation_handler(__u64 slba, __u64 size, unsigned short op, void *data
     int pointer_idx = 0;
     for (int i = 0; i < num_buffers; ++i) {
         void* data_ptr;
-        data_ptr = mmap(NULL, (chunkSize + 1) << 9, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
+        data_ptr = mmap(NULL, (chunkSize) << 9, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
         assert(data_ptr != MAP_FAILED);
 
         // if (posix_memalign(&data_ptr, 512, (chunkSize + 1) << 9) != 0) {
@@ -271,7 +271,7 @@ int nvme_operation_handler(__u64 slba, __u64 size, unsigned short op, void *data
             memcpy(data, dataBuffer, (nblock << 9));
         }
         // free(dataBuffer);
-        munmap(dataBuffer, (chunkSize + 1) << 9);
+        munmap(dataBuffer, (chunkSize) << 9);
     }
     data_pointers.clear();
 #endif
